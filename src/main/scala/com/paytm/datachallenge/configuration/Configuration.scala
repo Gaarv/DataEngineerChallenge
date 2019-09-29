@@ -8,7 +8,7 @@ package com.paytm.datachallenge.configuration
   */
 object Configuration {
 
-  val elbLogsPath: String = "./data/2015_07_22_mktplace_shop_web_log_sample.log"
+  val elbLogsPath: String = "./data/2015_07_22_mktplace_shop_web_log_sample.log.gz"
 
   val sessionWindowDuration: String  = "30 minutes"
 

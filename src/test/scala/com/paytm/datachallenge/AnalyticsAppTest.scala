@@ -1,11 +1,8 @@
 package com.paytm.datachallenge
 
-import com.paytm.datachallenge.Analytics.averageSessionTime
-import com.paytm.datachallenge.AnalyticsApp._
 import com.paytm.datachallenge.configuration.Configuration._
-import com.paytm.datachallenge.logs.ELBLog
-import org.apache.spark.sql.{ DataFrame, Dataset }
-import spark.implicits._
+import com.paytm.datachallenge.preprocessing.Preprocessing
+import org.apache.spark.sql.DataFrame
 
 import scala.util.{ Failure, Success, Try }
 
@@ -28,7 +25,7 @@ object AnalyticsAppTest extends App with SparkLocal with Logging {
   val analyticsTasks = {
     val logs = DataSources.readELBLogs(elbLogsPath)(spark).cache()
     List(
-      printToConsole(averageSessionTime(logs))
+      printToConsole(Preprocessing.sessionizeLogs(logs))
     )
   }
 

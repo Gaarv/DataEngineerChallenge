@@ -1,4 +1,4 @@
-package com.paytm.datachallenge.logs
+package com.paytm.datachallenge
 
 import java.sql.Timestamp
 

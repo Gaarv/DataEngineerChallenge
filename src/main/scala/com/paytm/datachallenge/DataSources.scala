@@ -1,6 +1,5 @@
 package com.paytm.datachallenge
 
-import com.paytm.datachallenge.logs.ELBLog
 import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.{ Column, DataFrame, Dataset, SparkSession, functions => F }
 
@@ -24,6 +23,12 @@ object DataSources {
     "ssl_protocol"
   )
 
+  /**
+    *
+    * @param path
+    * @param spark
+    * @return
+    */
   def readELBLogs(path: String)(spark: SparkSession): Dataset[ELBLog] = {
     import spark.implicits._
     val rawDf = spark.read
@@ -37,11 +42,11 @@ object DataSources {
     parseElbLogs(rawDf).as[ELBLog]
   }
 
-  def parseElbLogs(df: DataFrame): DataFrame =
+  private def parseElbLogs(df: DataFrame): DataFrame =
     df.withColumn("request_ip", F.split(F.col("request_ip_port"), ":")(0))
-      .withColumn("request_port", F.split(F.col("request_ip_port"), ":")(1).cast(IntegerType))
+      .withColumn("request_port", F.coalesce(F.split(F.col("request_ip_port"), ":")(1).cast(IntegerType), F.lit(80)))
       .withColumn("backend_ip", F.split(F.col("backend_ip_port"), ":")(0))
-      .withColumn("backend_port", F.split(F.col("backend_ip_port"), ":")(1).cast(IntegerType))
+      .withColumn("backend_port", F.coalesce(F.split(F.col("backend_ip_port"), ":")(1).cast(IntegerType), F.lit(80)))
       .withColumn("request_verb", parseMethod(F.col("method_protocol_url")))
       .withColumn("protocol", parseProtocol(F.col("method_protocol_url")))
       .withColumn("url", parseUrl(F.col("method_protocol_url")))

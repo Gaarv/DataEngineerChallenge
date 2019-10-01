@@ -9,7 +9,6 @@ object Dependencies {
   lazy val sparkCore      = "org.apache.spark" %% "spark-core"     % sparkVersion % "provided"
   lazy val sparkSQL       = "org.apache.spark" %% "spark-sql"      % sparkVersion % "provided"
   lazy val logbackCore    = "ch.qos.logback"   % "logback-core"    % logbackVersion
-  lazy val logbackClassic = "ch.qos.logback"   % "logback-classic" % logbackVersion
   lazy val slf4j          = "org.slf4j"        % "slf4j-api"       % slf4jVersion
   lazy val scalaTest      = "org.scalatest"    %% "scalatest"      % "3.0.8"
 

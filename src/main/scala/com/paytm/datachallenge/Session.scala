@@ -3,7 +3,7 @@ package com.paytm.datachallenge
 import java.sql.Timestamp
 
 case class Session(
-    session_id: String,
+    user_id: String,
     request_ip: String,
     user_agent: String,
     start_timestamp: Timestamp,

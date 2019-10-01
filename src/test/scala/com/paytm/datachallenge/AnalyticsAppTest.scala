@@ -1,13 +1,14 @@
 package com.paytm.datachallenge
 
 import com.paytm.datachallenge.Analytics._
-import com.paytm.datachallenge.AnalyticsApp.spark
+import com.paytm.datachallenge.AnalyticsApp._
 import com.paytm.datachallenge.Configuration._
 import com.paytm.datachallenge.DataSources.readELBLogs
 import com.paytm.datachallenge.Preprocessing.sessionize
 import org.apache.spark.sql.DataFrame
 
 import scala.util.{ Failure, Success, Try }
+import spark.implicits._
 
 object AnalyticsAppTest extends App with SparkLocal with Logging {
 
@@ -34,7 +35,7 @@ object AnalyticsAppTest extends App with SparkLocal with Logging {
   /**
     *
     */
-  val printToConsole: DataFrame => Unit = df => df.show(50, truncate = false)
+  val printToConsole: DataFrame => Unit = df => df.show(25, truncate = false)
 
   /**
     *

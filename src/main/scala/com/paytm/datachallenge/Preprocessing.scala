@@ -1,6 +1,7 @@
 package com.paytm.datachallenge
 
-import java.util.UUID.randomUUID
+import java.math.BigInteger
+import java.security.MessageDigest
 
 import com.paytm.datachallenge.AnalyticsApp._
 import org.apache.spark.sql.Dataset
@@ -47,7 +48,16 @@ object Preprocessing {
         )
         sameSession +: sessions.tail
       } else {
-        val newSession = Session(randomUUID().toString, log.request_ip, log.user_agent, log.timestamp, log.timestamp, 0, 1, List(log.url))
+        val newSession = Session(
+          md5HashString(log.request_ip + log.user_agent),
+          log.request_ip,
+          log.user_agent,
+          log.timestamp,
+          log.timestamp,
+          duration = 0,
+          hits = 1,
+          urls = List(log.url)
+        )
         newSession +: sessions
       }
     }
@@ -61,5 +71,18 @@ object Preprocessing {
     */
   private def sessionDuration(log: ELBLog, session: Session): Long =
     log.timestamp.toInstant.getEpochSecond - session.end_timestamp.toInstant.getEpochSecond
+
+  /**
+    *
+    * @param s a string to hash
+    * @return md5 hash of given string
+    */
+  private def md5HashString(s: String): String = {
+    val md           = MessageDigest.getInstance("MD5")
+    val digest       = md.digest(s.getBytes)
+    val bigInt       = new BigInteger(1, digest)
+    val hashedString = bigInt.toString(16)
+    hashedString
+  }
 
 }

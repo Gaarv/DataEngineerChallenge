@@ -39,7 +39,10 @@ object Analytics extends Logging {
   /**
     *
     */
-  val sessionizeLogs: Dataset[Session] => DataFrame = sessions => sessions.drop(F.col("urls"))
+  val sessionizeLogs: Dataset[Session] => DataFrame = sessions =>
+    sessions
+      .drop(F.col("urls"))
+      .orderBy(F.col("request_ip"), F.col("user_agent"), F.col("start_timestamp"))
 
   /**
     *
@@ -53,20 +56,37 @@ object Analytics extends Logging {
   val uniqueUrlsPerSession: Dataset[Session] => DataFrame = sessions =>
     sessions
       .withColumn("url", F.explode(F.col("urls")))
-      .groupBy(F.col("session_id"))
+      .groupBy(F.col("user_id"))
       .agg(F.countDistinct(F.col("url")).as("unique_urls_count"))
-      .select(F.col("session_id"), F.col("unique_urls_count"))
+      .select(F.col("user_id"), F.col("unique_urls_count"))
 
-  //  val mostEngagedUsers: Dataset[Session] => DataFrame = ???
+  val mostEngagedUsersBySessionDuration: Dataset[Session] => DataFrame = sessions =>
+    sessions
+      .groupBy(F.col("user_id"))
+      .agg(F.sum(F.col("duration")).as("total_duration"))
+      .orderBy(F.col("total_duration").desc)
+      .limit(1000)
+
+  val mostEngagedUsersByUniqueUrlCount: Dataset[Session] => DataFrame = sessions =>
+    uniqueUrlsPerSession(sessions)
+      .groupBy(F.col("user_id"))
+      .agg(F.sum(F.col("unique_urls_count")).as("total_unique_urls_count"))
+      .orderBy(F.col("total_unique_urls_count").desc)
+      .limit(1000)
+      .distinct()
+      .toDF
+      .join(sessions.select(F.col("user_id"), F.col("request_ip"), F.col("user_agent")).toDF, Seq("user_id"))
 
   /**
     *
     */
   val analyticsTasks: Dataset[Session] => List[(DataFrame, String)] = logs =>
     List(
-      (sessionizeLogs(logs), "sessionize-logs-by-ip.csv"),
-      (averageSessionTime(logs), "average-session-time.csv"),
-      (uniqueUrlsPerSession(logs), "unique-urls-per-session.csv")
+      (sessionizeLogs(logs), "sessionize-logs-by-ip"),
+      (averageSessionTime(logs), "average-session-time"),
+      (uniqueUrlsPerSession(logs), "unique-urls-per-session"),
+      (mostEngagedUsersBySessionDuration(logs), "most-engaged-users-by-session-duration"),
+      (mostEngagedUsersByUniqueUrlCount(logs), "most-engaged-users-by-unique-urls-count")
     )
 
 }

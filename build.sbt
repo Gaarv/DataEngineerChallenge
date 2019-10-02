@@ -15,5 +15,8 @@ lazy val root = (project in file(".")).settings(
   test in assembly := {},
   libraryDependencies += sparkCore,
   libraryDependencies += sparkSQL,
+  libraryDependencies += logbackCore,
+  libraryDependencies += logbackClassic,
+  libraryDependencies += slf4j,
   libraryDependencies += scalaTest % Test
 )

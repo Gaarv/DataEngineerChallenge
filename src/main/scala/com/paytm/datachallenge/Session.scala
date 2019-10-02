@@ -4,6 +4,7 @@ import java.sql.Timestamp
 
 case class Session(
     user_id: String,
+    session_id: String,
     request_ip: String,
     user_agent: String,
     start_timestamp: Timestamp,

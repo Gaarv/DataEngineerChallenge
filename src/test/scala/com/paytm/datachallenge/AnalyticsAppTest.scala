@@ -18,12 +18,13 @@ object AnalyticsAppTest extends App with SparkLocal with Logging {
   def run(): Unit = {
     val logs            = readELBLogs(elbLogsPath)(spark)
     val sessionizedLogs = sessionize(logs, sessionTimeout).cache()
-    analyticsTasks(sessionizedLogs).par.foreach { task =>
-      Try(writeResults(task._1, outputPath.concat(task._2))) match {
-        case Success(_)         => logger.info(s"Task $task successfully completed.")
-        case Failure(exception) => logger.error(s"Task $task failed with error message ${exception.getMessage}")
-      }
-      printToConsole(task._1)
+    analyticsTasks(sessionizedLogs).par.foreach {
+      case (taskOP, taskName) =>
+        Try(writeResults(taskOP, outputPath.concat(taskName))) match {
+          case Success(_)         => logger.info(s"Task ${taskName} successfully completed.")
+          case Failure(exception) => logger.error(s"Task ${taskName} failed with error message ${exception.getMessage}")
+        }
+        printToConsole(taskOP)
     }
   }
 

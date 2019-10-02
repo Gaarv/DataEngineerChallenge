@@ -2,9 +2,10 @@ package com.paytm.datachallenge
 
 /**
   * In a real case scenario, this object would be a case class populated
-  *  with elements passed as configuration to main class with pureconfig or
-  *  as an argument with scopt. Could be paths on S3, Hive tables,
+  *  with values passed as configuration to main class with pureconfig or
+  *  as arguments with scopt. Those could be paths on S3, Hive tables,
   *  application settings suchs as timeouts, etc.
+  *
   */
 object Configuration {
 

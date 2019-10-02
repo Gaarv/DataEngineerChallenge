@@ -2,6 +2,7 @@ package com.paytm.datachallenge
 
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.util.UUID
 
 import com.paytm.datachallenge.AnalyticsApp._
 import org.apache.spark.sql.Dataset
@@ -31,6 +32,12 @@ object Preprocessing {
     * Aggregate values from the current processed session to the previous session when
     * two logs entries are spaced with less than sessionTimeout.
     *
+    * In a [[Session]] object, we use a user_id field formed by MD5 hash of request_ip + user_agent. While not
+    * ideal, this allow to search a potential same user in a batch of logs and allow
+    * for joins on request_ip, user_agent, etc.
+    *
+    * We also use a randomly generated [[UUID]] for each session named session_id.
+    *
     * @param logs a Iterable of [[ELBLog]]
     * @param sessionTimeout number of seconds after which to consider the session has expired
     * @return a List of [[Session]]
@@ -50,6 +57,7 @@ object Preprocessing {
       } else {
         val newSession = Session(
           md5HashString(log.request_ip + log.user_agent),
+          UUID.randomUUID().toString,
           log.request_ip,
           log.user_agent,
           log.timestamp,

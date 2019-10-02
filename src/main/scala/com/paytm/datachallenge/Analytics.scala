@@ -12,22 +12,20 @@ object Analytics extends Logging {
 
   /**
     *  This is the entry function that is called from [[AnalyticsApp.main()]].
-    *  This allow to have a main that only parse arguments and configuration
-    *  and run specific jon on pattern matching.
+    *  Allow to have a main function that only parse arguments or configuration
+    *  and run specific job based on pattern matching.
     *
-    *  Also, the spark value can easily be called from AnalyticsApp.spark
-    *
-    *  Tasks are defined using expression and can be combined / composed.
-    *  Tasks do not include I/O operations:
+    *  Tasks are defined using expressions and can be combined / composed.
+    *  Tasks do not include I/O operations so:
     *    1. they can be tested easily
-    *    2. different I/O can be used in tests
+    *    2. different I/Os can be used in tests
     *
     */
   def run(): Unit = {
 
     /**
       * sessionized logs are used in all tasks so we only read the raw file once,
-      * sessionize it through [[Preprocessing.sessionize()]] and persist it to memory.
+      * sessionize logs with [[Preprocessing.sessionize()]] and persist to memory.
       */
     val logs            = readELBLogs(elbLogsPath)(spark)
     val sessionizedLogs = sessionize(logs, sessionTimeout).cache()
@@ -59,9 +57,9 @@ object Analytics extends Logging {
 
   /**
     * Task that takes a Dataset of [[Session]] and return a Dataframe.
-    * The urls column is dropped as it not useful in this output,
-    * ordering is optional, but could be useful to those who would be using this result,
-    * be it in a Hive table or a file.
+    * The urls column is dropped as it's not useful in this output,
+    * ordering is optional, but useful to those who would be using this result,
+    * like users doing analytics from a Hive table.
     *
     */
   val sessionizeLogs: Dataset[Session] => DataFrame = sessions =>
@@ -125,8 +123,8 @@ object Analytics extends Logging {
     * A list that group all tasks to run, alone with a task name that will be used
     * for output directory name containing results.
     *
-    * Nothing is run at this point since its lazily evaluated.
-    * Tasks are run in [[Analytics.run()]].
+    * Nothing is run at this point since lazily evaluated.
+    * Tasks are actually run in [[Analytics.run()]].
     *
     */
   val analyticsTasks: Dataset[Session] => List[(DataFrame, String)] = logs =>

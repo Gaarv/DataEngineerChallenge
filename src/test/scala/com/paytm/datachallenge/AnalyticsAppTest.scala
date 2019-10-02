@@ -11,7 +11,7 @@ import scala.util.{ Failure, Success, Try }
 import spark.implicits._
 
 /**
-  * a AppTest that can to run implemented code from [[Analytics]] but with different I/Os
+  * An AppTest that can run implemented code from [[Analytics]] but with different I/Os
   * (ie. different input file, print to console rather than writing to a table).
   *
   * It can be used as an integration test or simply for visual testing.
@@ -25,7 +25,7 @@ import spark.implicits._
 object AnalyticsAppTest extends App with SparkLocal with Logging {
 
   /**
-    * Function that call values and function implemented in source.
+    * Function that call values and functions implemented in source.
     * In this case, we use the same I/Os except that we also print results to console.
     * We also could have print the schema, explain the execution plan, or even compose those together.
     */

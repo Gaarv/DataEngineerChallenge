@@ -24,6 +24,10 @@ object DataSources {
   )
 
   /**
+    * Function that read a CSV file of ELB logs given a path.
+    * As a first filter, a schema is used to reject possible bad lines,
+    * and then some fields are parsed appropriately to match encoder [[ELBLog]]
+    *
     *
     * @param path
     * @param spark

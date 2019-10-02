@@ -46,7 +46,7 @@ class PreprocessingSpec extends WordSpec with Matchers with SparkLocal with Give
       result should contain theSameElementsAs expected
     }
 
-    "sessionize ELB logs containing two users and two sessions according to a given timeout duration" in {
+    "sessionize ELB logs containing two users and three sessions according to a given timeout duration" in {
 
       Given("a dataset of ELB logs and a session timeout duration in seconds")
       val sessionTimeout = 16 * 60 // 15 minutes
